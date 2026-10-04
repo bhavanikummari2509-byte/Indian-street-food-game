@@ -1,10 +1,390 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Indian Street Food Game</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indian Street Food Stall</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #fff1c1, #ffd6a5);
+  color: #4b2600;
+  text-align: center;
+}
+
+.game {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+h1 {
+  margin: 10px 0 5px;
+  font-size: 38px;
+}
+
+.subtitle {
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 15px 0;
+}
+
+.info {
+  background: white;
+  padding: 12px 20px;
+  border-radius: 15px;
+  box-shadow: 0 3px 10px #0002;
+  font-weight: bold;
+}
+
+.stall {
+  background: #e87922;
+  border: 6px solid #9b4511;
+  border-radius: 25px;
+  padding: 20px;
+  box-shadow: 0 8px 20px #0003;
+}
+
+.shopkeeper {
+  font-size: 70px;
+  margin-bottom: 5px;
+}
+
+.shopkeeper-name {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.customer {
+  background: #fff;
+  margin: 20px auto;
+  padding: 18px;
+  border-radius: 20px;
+  max-width: 650px;
+  box-shadow: 0 4px 12px #0002;
+}
+
+.customer-face {
+  font-size: 55px;
+}
+
+.order {
+  font-size: 22px;
+  font-weight: bold;
+  margin: 10px;
+}
+
+.timer {
+  height: 12px;
+  background: #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 10px;
+}
+
+.timer-bar {
+  height: 100%;
+  width: 100%;
+  background: #39a852;
+  transition: width 1s linear;
+}
+
+.foods {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.food {
+  border: none;
+  border-radius: 18px;
+  padding: 15px 8px;
+  background: white;
+  cursor: pointer;
+  font-size: 17px;
+  font-weight: bold;
+  box-shadow: 0 4px 8px #0002;
+  transition: 0.2s;
+}
+
+.food:hover {
+  transform: translateY(-4px);
+  background: #fff3d6;
+}
+
+.food span {
+  display: block;
+  font-size: 38px;
+  margin-bottom: 5px;
+}
+
+.message {
+  min-height: 35px;
+  margin: 15px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.start {
+  border: none;
+  background: #168c45;
+  color: white;
+  padding: 14px 35px;
+  border-radius: 30px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 10px;
+}
+
+.start:hover {
+  background: #0f6d34;
+}
+
+.hidden {
+  display: none;
+}
+
+.receipt {
+  background: #fffdf2;
+  padding: 15px;
+  border-radius: 15px;
+  margin-top: 15px;
+}
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: 28px;
+  }
+
+  .game {
+    padding: 10px;
+  }
+}
+</style>
 </head>
+
 <body>
-  <h1>🍲 Indian Street Food Stall</h1>
-  <p>Welcome to my street food stall!</p>
+
+<div class="game">
+
+  <h1>🌟 Indian Street Food Stall 🌟</h1>
+  <div class="subtitle">Serve delicious food and earn money!</div>
+
+  <div class="topbar">
+    <div class="info">💰 Money: ₹<span id="money">0</span></div>
+    <div class="info">⭐ Score: <span id="score">0</span></div>
+    <div class="info">👥 Customers: <span id="customers">0</span></div>
+  </div>
+
+  <div class="stall">
+
+    <div class="shopkeeper">👨‍🍳</div>
+    <div class="shopkeeper-name">Raju Uncle's Food Stall</div>
+
+    <button class="start" id="startBtn" onclick="startGame()">
+      🛎️ Open Stall
+    </button>
+
+    <div id="gameArea" class="hidden">
+
+      <div class="customer">
+        <div class="customer-face" id="customerFace">🧑</div>
+
+        <div class="order" id="orderText">
+          Customer is waiting...
+        </div>
+
+        <div class="timer">
+          <div class="timer-bar" id="timerBar"></div>
+        </div>
+
+        <div id="timeText">Waiting time: 20s</div>
+      </div>
+
+      <div class="message" id="message">
+        Choose the food the customer ordered!
+      </div>
+
+      <div class="foods">
+
+        <button class="food" onclick="serve('Pani Puri')">
+          <span>🥣</span>
+          Pani Puri<br>₹30
+        </button>
+
+        <button class="food" onclick="serve('Vada Pav')">
+          <span>🍔</span>
+          Vada Pav<br>₹25
+        </button>
+
+        <button class="food" onclick="serve('Samosa')">
+          <span>🥟</span>
+          Samosa<br>₹20
+        </button>
+
+        <button class="food" onclick="serve('Pav Bhaji')">
+          <span>🍛</span>
+          Pav Bhaji<br>₹50
+        </button>
+
+        <button class="food" onclick="serve('Bhel Puri')">
+          <span>🥗</span>
+          Bhel Puri<br>₹35
+        </button>
+
+        <button class="food" onclick="serve('Dosa')">
+          <span>🥞</span>
+          Masala Dosa<br>₹60
+        </button>
+
+        <button class="food" onclick="serve('Jalebi')">
+          <span>🍩</span>
+          Jalebi<br>₹30
+        </button>
+
+      </div>
+
+      <div class="receipt">
+        🧾 Today's Earnings: ₹<span id="earnings">0</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+
+const foods = [
+  {name: "Pani Puri", price: 30},
+  {name: "Vada Pav", price: 25},
+  {name: "Samosa", price: 20},
+  {name: "Pav Bhaji", price: 50},
+  {name: "Bhel Puri", price: 35},
+  {name: "Dosa", price: 60},
+  {name: "Jalebi", price: 30}
+];
+
+const customers = ["👩", "👨", "👧", "👦", "👩‍🦱", "👨‍🦱", "👵", "👴"];
+
+let currentFood;
+let money = 0;
+let score = 0;
+let customerCount = 0;
+let timeLeft = 20;
+let timer;
+
+function startGame() {
+
+  document.getElementById("startBtn").classList.add("hidden");
+  document.getElementById("gameArea").classList.remove("hidden");
+
+  money = 0;
+  score = 0;
+  customerCount = 0;
+
+  updateStats();
+  newCustomer();
+}
+
+function newCustomer() {
+
+  clearInterval(timer);
+
+  currentFood = foods[Math.floor(Math.random() * foods.length)];
+
+  const customer =
+    customers[Math.floor(Math.random() * customers.length)];
+
+  document.getElementById("customerFace").textContent = customer;
+
+  document.getElementById("orderText").textContent =
+    "I want " + currentFood.name + " please!";
+
+  document.getElementById("message").textContent =
+    "Serve the customer's order!";
+
+  timeLeft = 20;
+  updateTimer();
+
+  timer = setInterval(() => {
+
+    timeLeft--;
+
+    updateTimer();
+
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+
+      document.getElementById("message").textContent =
+        "😢 Customer left! Too slow!";
+
+      setTimeout(newCustomer, 1500);
+    }
+
+  }, 1000);
+}
+
+function updateTimer() {
+
+  const percent = (timeLeft / 20) * 100;
+
+  document.getElementById("timerBar").style.width =
+    percent + "%";
+
+  document.getElementById("timeText").textContent =
+    "Waiting time: " + timeLeft + "s";
+}
+
+function serve(foodName) {
+
+  if (!currentFood) return;
+
+  if (foodName === currentFood.name) {
+
+    clearInterval(timer);
+
+    money += currentFood.price;
+    score += 10;
+    customerCount++;
+
+    document.getElementById("message").textContent =
+      "🎉 Correct! Customer paid ₹" + currentFood.price + "!";
+
+    updateStats();
+
+    setTimeout(newCustomer, 1200);
+
+  } else {
+
+    document.getElementById("message").textContent =
+      "❌ That's not what the customer ordered!";
+  }
+}
+
+function updateStats() {
+
+  document.getElementById("money").textContent = money;
+  document.getElementById("score").textContent = score;
+  document.getElementById("customers").textContent = customerCount;
+  document.getElementById("earnings").textContent = money;
+}
+
+</script>
+
 </body>
 </html>
